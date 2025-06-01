@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bookmarks Table</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <h1>Bookmarks Viewer</h1>
+    <div>
+        <label for="folderSelect">Select Folder:</label>
+        <select id="folderSelect">
+            <option value="all">All Bookmarks</option>
+        </select>
+    </div>
+    <div style="max-height: 400px; overflow: auto; margin-top: 10px;">
+        <table id="bookmarksTable" border="1" cellspacing="0" cellpadding="5" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th data-column="title" style="cursor: pointer;">Title</th>
+                    <th data-column="url" style="cursor: pointer;">URL</th>
+                    <th data-column="folder" style="cursor: pointer;">Folder</th>
+                    <th data-column="dateAdded" style="cursor: pointer;">Date Added</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>
