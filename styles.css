@@ -1,18 +1,36 @@
-body {
-  font-family: Arial, sans-serif;
-  padding: 10px;
-  width: 600px;
+/* Ensure the container adapts to viewport width and prevents overflow */
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* Adds horizontal scroll if table is too wide */
+    box-sizing: border-box;
+    padding: 10px; /* optional padding */
 }
 
-h1 {
-  font-size: 1.2em;
-  margin-bottom: 10px;
+/* Make the table fully responsive */
+#bookmarksTable {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    table-layout: auto; /* Ensures columns resize based on content */
 }
 
-th {
-  background-color: #f0f0f0;
+/* Optional: Style headers for better clarity */
+#bookmarksTable th {
+    padding: 8px;
+    text-align: left;
+    background-color: #f2f2f2;
+    cursor: pointer;
 }
 
-th:hover {
-  background-color: #ddd;
+/* Style table cells */
+#bookmarksTable td {
+    padding: 8px;
+    word-break: break-word; /* Prevent long URLs from breaking layout */
+}
+
+/* Ensure links are responsive and don't overflow */
+#bookmarksTable a {
+    display: inline-block;
+    max-width: 100%;
+    word-break: break-word;
 }
