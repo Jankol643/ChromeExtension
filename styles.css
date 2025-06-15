@@ -1,36 +1,124 @@
-/* Ensure the container adapts to viewport width and prevents overflow */
+/* Reset and base styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+/* Headings */
+h1 {
+    text-align: center;
+}
+
+/* Filter container styles */
+.filter-container {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Tag styles for excluded folders and tags container */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+/* Individual tag styles */
+.tag {
+    background-color: #e0e0e0;
+    padding: 4px 8px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9em;
+}
+
+.tag span {
+    margin-right: 8px;
+}
+
+.remove-tag {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* Container for the table to allow horizontal scrolling if needed */
 .table-container {
     width: 100%;
-    overflow-x: auto; /* Adds horizontal scroll if table is too wide */
+    overflow-x: auto; /* Enables horizontal scroll for wide tables */
     box-sizing: border-box;
-    padding: 10px; /* optional padding */
+    /* Optional: add a max height if needed for vertical scrolling */
 }
 
-/* Make the table fully responsive */
+/* Styles for the table with flexible layout */
 #bookmarksTable {
     width: 100%;
-    max-width: 100%;
+    min-width: 800px; /* Ensure table doesn't shrink too much; adjust as needed */
     border-collapse: collapse;
-    table-layout: auto; /* Ensures columns resize based on content */
+    table-layout: fixed; /* Use fixed layout for consistent column widths */
 }
 
-/* Optional: Style headers for better clarity */
+/* Table header styles */
 #bookmarksTable th {
     padding: 8px;
     text-align: left;
     background-color: #f2f2f2;
     cursor: pointer;
+    border: 1px solid #ccc;
+    white-space: nowrap; /* Keep headers on one line for clarity */
 }
 
-/* Style table cells */
+/* Visual indicators for sortable headers */
+#bookmarksTable th.sort-asc::after {
+    content: " ↑";
+}
+#bookmarksTable th.sort-desc::after {
+    content: " ↓";
+}
+
+/* Table cell styles */
 #bookmarksTable td {
     padding: 8px;
-    word-break: break-word; /* Prevent long URLs from breaking layout */
+    border: 1px solid #ccc;
+    overflow: hidden; /* To handle ellipsis if needed */
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Default: no wrapping unless overridden */
 }
 
-/* Ensure links are responsive and don't overflow */
-#bookmarksTable a {
-    display: inline-block;
-    max-width: 100%;
+/* Specific column widths */
+
+#bookmarksTable td.url-column {
+    /* Limit URL column width to prevent it from expanding excessively */
+    max-width: 300px; /* Adjust as needed */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#bookmarksTable td.title {
+    /* Allow title to take remaining space but not too wide */
+    max-width: 25%;
+}
+
+#bookmarksTable td.folder-column {
+    /* Allow folder column to wrap if needed, but keep reasonable width */
+    white-space: normal; /* allow wrapping */
+    max-width: 20%;
     word-break: break-word;
 }
+
+#bookmarksTable td.date-column {
+    /* Keep date in one line */
+    white-space: nowrap;
+    max-width: 15%;
+}
+
+/* Optional: adjust header widths to match data columns if needed */
+/* Or set explicit widths for headers for consistency */

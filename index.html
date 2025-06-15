@@ -16,10 +16,23 @@
             <option value="all">All Bookmarks</option>
         </select>
     </div>
+    <!-- Exclude folders input and tags display -->
+    <div class="filter-container">
+        <label for="excludeFoldersInput">Exclude Folders:</label>
+        <input type="text" id="excludeFoldersInput" placeholder="Type folder name and press Enter or comma" />
+        <div id="excludedFoldersTags" class="tags-container"></div>
+        <button id="applyExclusions">Apply Exclusions</button>
+    </div>
+    <!-- Place this inside your body, below the filters -->
+    <div id="countsContainer" style="margin-top:10px;">
+        <div id="bookmarksCount"></div>
+        <div id="excludedCount"></div>
+    </div>
     <div class="table-container">
         <table id="bookmarksTable">
             <thead>
                 <tr>
+                    <th data-column="rowNumber" class="clickable-header">#</th>
                     <th data-column="title" class="clickable-header">Title</th>
                     <th data-column="url" class="clickable-header">URL</th>
                     <th data-column="folder" class="clickable-header">Folder</th>
