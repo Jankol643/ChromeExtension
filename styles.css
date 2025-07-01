@@ -47,6 +47,12 @@ h1 {
     font-size: 1em;
     font-weight: bold;
     line-height: 1;
+    padding: 2px 4px;
+    transition: background-color 0.2s;
+}
+
+.remove-tag:hover {
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Container for the table to allow horizontal scrolling if needed */
@@ -54,13 +60,12 @@ h1 {
     width: 100%;
     overflow-x: auto; /* Enables horizontal scroll for wide tables */
     box-sizing: border-box;
-    /* Optional: add a max height if needed for vertical scrolling */
 }
 
 /* Styles for the table with flexible layout */
 #bookmarksTable {
     width: 100%;
-    min-width: 800px; /* Ensure table doesn't shrink too much; adjust as needed */
+    min-width: 800px; /* Adjust as needed */
     border-collapse: collapse;
     table-layout: fixed; /* Use fixed layout for consistent column widths */
 }
@@ -72,53 +77,66 @@ h1 {
     background-color: #f2f2f2;
     cursor: pointer;
     border: 1px solid #ccc;
-    white-space: nowrap; /* Keep headers on one line for clarity */
+    position: relative;
+    white-space: nowrap; /* Keep headers on one line */
 }
 
-/* Visual indicators for sortable headers */
-#bookmarksTable th.sort-asc::after {
-    content: " ↑";
-}
+/* Visual indicators for sortable headers using pseudo-elements */
+#bookmarksTable th.sort-asc::after,
 #bookmarksTable th.sort-desc::after {
-    content: " ↓";
+    content: "";
+    display: inline-block;
+    margin-left: 5px;
+    width: 0;
+    height: 0;
+    vertical-align: middle;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+}
+
+#bookmarksTable th.sort-asc::after {
+    border-bottom: 6px solid #000; /* Upward arrow */
+}
+
+#bookmarksTable th.sort-desc::after {
+    border-top: 6px solid #000; /* Downward arrow */
 }
 
 /* Table cell styles */
 #bookmarksTable td {
     padding: 8px;
     border: 1px solid #ccc;
-    overflow: hidden; /* To handle ellipsis if needed */
+    overflow: hidden; /* Handle ellipsis if needed */
     text-overflow: ellipsis;
     white-space: nowrap; /* Default: no wrapping unless overridden */
 }
 
 /* Specific column widths */
-
 #bookmarksTable td.url-column {
-    /* Limit URL column width to prevent it from expanding excessively */
-    max-width: 300px; /* Adjust as needed */
+    max-width: 300px; /* Limit URL column width */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 #bookmarksTable td.title {
-    /* Allow title to take remaining space but not too wide */
     max-width: 25%;
 }
 
 #bookmarksTable td.folder-column {
-    /* Allow folder column to wrap if needed, but keep reasonable width */
-    white-space: normal; /* allow wrapping */
+    white-space: normal; /* Allow wrapping */
     max-width: 20%;
     word-break: break-word;
 }
 
 #bookmarksTable td.date-column {
-    /* Keep date in one line */
     white-space: nowrap;
     max-width: 15%;
 }
 
-/* Optional: adjust header widths to match data columns if needed */
-/* Or set explicit widths for headers for consistency */
+/* Optional: set header widths explicitly for consistency if needed */
+
+/* Counts container style */
+#countsContainer {
+    margin-top: 10px;
+}
