@@ -9,13 +9,21 @@
 </head>
 
 <body>
+    <!-- Loading Spinner Overlay -->
+    <div id="loadingOverlay" class="overlay overlay-hidden">
+        <div class="spinner"></div>
+        <div>Loading bookmarks...</div>
+    </div>
+
     <h1>Bookmarks Viewer</h1>
+
     <div class="filter-container">
         <label for="folderSelect">Select Folder:</label>
         <select id="folderSelect">
             <option value="all">All Bookmarks</option>
         </select>
     </div>
+
     <!-- Exclude folders input and tags display -->
     <div class="filter-container">
         <label for="excludeFoldersInput">Exclude Folders:</label>
@@ -23,10 +31,35 @@
         <div id="excludedFoldersTags" class="tags-container"></div>
         <button id="applyExclusions">Apply Exclusions</button>
     </div>
-    <div id="countsContainer"">
-        <div id=" bookmarksCount"></div>
-    <div id="excludedCount"></div>
+
+    <!-- Pagination Controls -->
+    <div id="paginationContainer">
+        <button id="showAllBtn">Show all</button>
+        <button id="enablePaginationBtn">Enable pagination</button>
+        <div class="page-info" id="pageInfo">Page 1 of 1</div> <!-- Added initial text -->
+        <div class="page-navigation">
+            <button id="firstPageBtn" disabled>First</button>
+            <button id="prevPageBtn" disabled>Previous</button>
+            <span id="currentPageDisplay">Page 1</span>
+            <button id="nextPageBtn" disabled>Next</button>
+            <button id="lastPageBtn" disabled>Last</button>
+        </div>
+        <!-- Add items per page selector to HTML -->
+        <select id="itemsPerPageSelect" class="items-per-page">
+            <option value="5">5 per page</option>
+            <option value="10">10 per page</option>
+            <option value="20">20 per page</option>
+            <option value="50">50 per page</option>
+            <option value="100">100 per page</option>
+        </select>
     </div>
+
+    <!-- Counts Container -->
+    <div id="countsContainer">
+        <div id="bookmarksCount"></div>
+        <div id="excludedCount"></div>
+    </div>
+
     <div class="table-container">
         <table id="bookmarksTable">
             <thead>
@@ -41,6 +74,7 @@
             <tbody></tbody>
         </table>
     </div>
+
     <script type="module" src="main.js"></script>
 </body>
 

@@ -1,5 +1,5 @@
 //uiHandlers.js
-import { handleFolderChange, handleSort } from './bookmarkUtils.js';
+import { displayBookmarks, handleFolderChange, handleSort, paginationState, allBookmarks } from './bookmarkUtils.js';
 
 export let excludedFolders = [];
 
@@ -68,4 +68,85 @@ export function removeExcludedFolderTag(folderName) {
             tagsContainer.removeChild(tag);
         }
     });
+}
+
+// In uiHandlers.js, update the setupPaginationControls function:
+export function setupPaginationControls() {
+    // Sync the dropdown with pagination state on initialization
+    const itemsPerPageSelect = document.getElementById('itemsPerPageSelect');
+    itemsPerPageSelect.value = paginationState.itemsPerPage.toString();
+
+    // Setup Show All button
+    document.getElementById('showAllBtn').addEventListener('click', () => {
+        paginationState.enabled = false;
+        paginationState.currentPage = 1;
+        displayBookmarks(allBookmarks);
+    });
+
+    // Setup Enable Pagination button
+    document.getElementById('enablePaginationBtn').addEventListener('click', () => {
+        paginationState.enabled = true;
+        paginationState.currentPage = 1;
+        displayBookmarks(allBookmarks);
+    });
+
+    // Setup navigation buttons
+    document.getElementById('firstPageBtn').addEventListener('click', () => {
+        if (paginationState.enabled) {
+            paginationState.currentPage = 1;
+            displayBookmarks(allBookmarks);
+        }
+    });
+
+    document.getElementById('prevPageBtn').addEventListener('click', () => {
+        if (paginationState.enabled && paginationState.currentPage > 1) {
+            paginationState.currentPage--;
+            displayBookmarks(allBookmarks);
+        }
+    });
+
+    document.getElementById('nextPageBtn').addEventListener('click', () => {
+        if (paginationState.enabled) {
+            const filteredBookmarks = filterExcludedFolders(allBookmarks);
+            const totalPages = Math.ceil(filteredBookmarks.length / paginationState.itemsPerPage);
+            if (paginationState.currentPage < totalPages) {
+                paginationState.currentPage++;
+                displayBookmarks(allBookmarks);
+            }
+        }
+    });
+
+    document.getElementById('lastPageBtn').addEventListener('click', () => {
+        if (paginationState.enabled) {
+            const filteredBookmarks = filterExcludedFolders(allBookmarks);
+            const totalPages = Math.ceil(filteredBookmarks.length / paginationState.itemsPerPage);
+            paginationState.currentPage = totalPages;
+            displayBookmarks(allBookmarks);
+        }
+    });
+
+    // Setup items per page selector
+    itemsPerPageSelect.addEventListener('change', (e) => {
+        paginationState.itemsPerPage = parseInt(e.target.value);
+        paginationState.currentPage = 1;
+        if (paginationState.enabled) {
+            displayBookmarks(allBookmarks);
+        }
+    });
+}
+
+// Helper function to filter bookmarks
+function filterExcludedFolders(bookmarks) {
+    return bookmarks.filter(b => {
+        return !excludedFolders.some(exFolder => b.folderPath.toLowerCase().includes(exFolder.toLowerCase()));
+    });
+}
+
+// Update the loading spinner functions
+export function showLoadingSpinner() {
+    document.getElementById('loadingOverlay').classList.remove('overlay-hidden');
+}
+
+export function hideLoadingSpinner() {
+    document.getElementById('loadingOverlay').classList.add('overlay-hidden');
 }

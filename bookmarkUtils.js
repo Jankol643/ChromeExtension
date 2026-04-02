@@ -1,8 +1,15 @@
-// bookmarkUtils.js
+//bookmarkUtils.js
 import { excludedFolders } from './uiHandlers.js';
 
 export let allBookmarks = [];
 export let foldersMap = new Map();
+
+// Use an object for pagination state
+export const paginationState = {
+    enabled: true,
+    currentPage: 1,
+    itemsPerPage: 50
+};
 
 export function fetchAndProcessBookmarks() {
     chrome.bookmarks.getTree((nodes) => {
@@ -55,13 +62,80 @@ export function populateFolderOptions() {
     });
 }
 
+// In bookmarkUtils.js, update the displayBookmarks function:
 export function displayBookmarks(bookmarks) {
     const tbody = document.querySelector('#bookmarksTable tbody');
     tbody.innerHTML = '';
 
     const filteredBookmarks = filterExcludedFolders(bookmarks);
     updateCounts(filteredBookmarks.length, bookmarks.length - filteredBookmarks.length);
-    filteredBookmarks.forEach((b, index) => createBookmarkRow(b, tbody, index + 1));
+
+    if (paginationState.enabled) {
+        const startIndex = (paginationState.currentPage - 1) * paginationState.itemsPerPage;
+        const endIndex = startIndex + paginationState.itemsPerPage;
+        const paginatedBookmarks = filteredBookmarks.slice(startIndex, endIndex);
+
+        paginatedBookmarks.forEach((b, index) => {
+            const globalIndex = startIndex + index + 1;
+            createBookmarkRow(b, tbody, globalIndex);
+        });
+
+        updatePaginationDisplay(filteredBookmarks.length);
+    } else {
+        filteredBookmarks.forEach((b, index) => createBookmarkRow(b, tbody, index + 1));
+        updatePaginationDisplay(filteredBookmarks.length);
+    }
+}
+
+// Update pagination display without recreating elements
+function updatePaginationDisplay(totalItems) {
+    const totalPages = Math.ceil(totalItems / paginationState.itemsPerPage);
+    const pageInfoElement = document.getElementById('pageInfo');
+    const currentPageDisplayElement = document.getElementById('currentPageDisplay');
+
+    // Update page info - only show when pagination is enabled
+    if (paginationState.enabled) {
+        pageInfoElement.textContent = `Page ${paginationState.currentPage} of ${totalPages}`;
+        currentPageDisplayElement.textContent = `Page ${paginationState.currentPage}`;
+        pageInfoElement.style.display = 'block';
+        currentPageDisplayElement.style.display = 'block';
+    } else {
+        // Hide page info when pagination is disabled
+        pageInfoElement.style.display = 'none';
+        currentPageDisplayElement.style.display = 'none';
+    }
+
+    // Update button states
+    const firstBtn = document.getElementById('firstPageBtn');
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    const lastBtn = document.getElementById('lastPageBtn');
+    const showAllBtn = document.getElementById('showAllBtn');
+    const enablePaginationBtn = document.getElementById('enablePaginationBtn');
+
+    // Always show pagination container
+    document.getElementById('paginationContainer').style.display = 'block';
+
+    if (paginationState.enabled) {
+        firstBtn.disabled = paginationState.currentPage === 1;
+        prevBtn.disabled = paginationState.currentPage === 1;
+        nextBtn.disabled = paginationState.currentPage === totalPages;
+        lastBtn.disabled = paginationState.currentPage === totalPages;
+
+        // Show navigation when pagination is enabled
+        document.querySelector('.page-navigation').style.display = 'flex';
+        document.getElementById('itemsPerPageSelect').style.display = 'inline-block';
+
+        showAllBtn.disabled = false;
+        enablePaginationBtn.disabled = true;
+    } else {
+        // Hide navigation when pagination is disabled
+        document.querySelector('.page-navigation').style.display = 'none';
+        document.getElementById('itemsPerPageSelect').style.display = 'none';
+
+        showAllBtn.disabled = true;
+        enablePaginationBtn.disabled = false;
+    }
 }
 
 export function filterExcludedFolders(bookmarks) {
@@ -70,7 +144,9 @@ export function filterExcludedFolders(bookmarks) {
     });
 }
 
+// Reset to page 1 when filtering
 export function handleFolderChange(selectedFolder) {
+    paginationState.currentPage = 1;
     if (selectedFolder === 'all') {
         displayBookmarks(allBookmarks);
     } else {
@@ -80,21 +156,21 @@ export function handleFolderChange(selectedFolder) {
 }
 
 export function handleSort(column, ascending) {
-    if (currentSort.column === column) {
-        currentSort.ascending = !currentSort.ascending;
+    if (window.currentSort.column === column) {
+        window.currentSort.ascending = !window.currentSort.ascending;
     } else {
-        currentSort.column = column;
-        currentSort.ascending = true;
+        window.currentSort.column = column;
+        window.currentSort.ascending = true;
     }
     updateSortIndicators();
-    sortTable(column, currentSort.ascending);
+    sortTable(column, window.currentSort.ascending);
 }
 
 function updateSortIndicators() {
     document.querySelectorAll('th.clickable-header').forEach(th => {
         th.classList.remove('sort-asc', 'sort-desc');
-        if (th.dataset.column === currentSort.column) {
-            th.classList.add(currentSort.ascending ? 'sort-asc' : 'sort-desc');
+        if (th.dataset.column === window.currentSort.column) {
+            th.classList.add(window.currentSort.ascending ? 'sort-asc' : 'sort-desc');
         }
     });
 }
@@ -181,13 +257,14 @@ function createDateCell(tr, dateAdded) {
 }
 
 function updateCounts(filteredCount, excludedCount) {
-    const countDiv = document.getElementById('bookmarksCount') || document.createElement('div');
-    countDiv.id = 'bookmarksCount';
+    const countDiv = document.getElementById('bookmarksCount');
     countDiv.textContent = `Bookmarks Count: ${filteredCount}`;
-    document.getElementById('countsContainer').appendChild(countDiv);
 
-    const excludedDiv = document.getElementById('excludedCount') || document.createElement('div');
-    excludedDiv.id = 'excludedCount';
-    excludedDiv.textContent = `Excluded Bookmarks: ${excludedCount}`;
-    document.getElementById('countsContainer').appendChild(excludedDiv);
+    const excludedDiv = document.getElementById('excludedCount');
+    if (excludedCount > 0) {
+        excludedDiv.textContent = `Excluded: ${excludedCount}`;
+        excludedDiv.style.display = 'block';
+    } else {
+        excludedDiv.style.display = 'none';
+    }
 }

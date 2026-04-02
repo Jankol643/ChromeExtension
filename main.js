@@ -1,18 +1,14 @@
 //main.js
 import { fetchAndProcessBookmarks } from './bookmarkUtils.js';
-import { setupEventListeners } from './uiHandlers.js';
+import { setupEventListeners, setupPaginationControls, showLoadingSpinner, hideLoadingSpinner } from './uiHandlers.js';
 
-// Store all bookmarks, folders, and exclusions
-let allBookmarks = [];
-let foldersMap = new Map(); // folderId -> folderTitle
-let excludedFolders = []; // folders to exclude
 let currentSort = { column: null, ascending: true };
+// Add this line to make currentSort available globally
+window.currentSort = currentSort;
 
 document.addEventListener('DOMContentLoaded', () => {
-    initialize();
-});
-
-function initialize() {
     setupEventListeners();
     fetchAndProcessBookmarks();
-}
+    setupPaginationControls();
+    hideLoadingSpinner();
+});
