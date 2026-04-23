@@ -1,5 +1,6 @@
 //uiHandlers.js
-import { displayBookmarks, handleFolderChange, handleSort, paginationState, allBookmarks } from './bookmarkUtils.js';
+import { displayBookmarks, handleFolderChange, handleSort, paginationState, allBookmarks, getAutoMovePreview, autoMoveDateFolders, fetchAndProcessBookmarks } from './bookmarkUtils.js';
+import { todoFolders, renderTodoList, allFoldersList, moveBookmark } from './bookmarkUtils.js';
 
 export let excludedFolders = [];
 
@@ -40,6 +41,88 @@ export function setupEventListeners() {
     });
 }
 
+export function setupTodoListeners() {
+    const $dropdown = $('#todoFolderDropdown');
+
+    // 1. Initialize Fomantic Dropdown
+    $dropdown.dropdown({
+        onAdd: function (value) {
+            if (!todoFolders.includes(value)) {
+                todoFolders.push(value);
+                renderTodoList();
+            }
+        },
+        onRemove: function (value) {
+            const index = todoFolders.indexOf(value);
+            if (index > -1) {
+                todoFolders.splice(index, 1);
+                renderTodoList();
+            }
+        }
+    });
+
+    document.getElementById('todoListBody').addEventListener('input', (e) => {
+        if (e.target.classList.contains('todo-move-search')) {
+            const input = e.target;
+            const bookmarkId = input.dataset.id;
+            const folderName = input.value;
+
+            // Find the matching folder in our master list
+            const targetFolder = allFoldersList.find(f => f.title === folderName);
+
+            if (targetFolder) {
+                if (confirm(`Move bookmark to: ${targetFolder.path}?`)) {
+                    moveBookmark(bookmarkId, targetFolder.id);
+                    input.value = ''; // Reset input after move
+                }
+            }
+        }
+    });
+
+    document.getElementById('confirmMoveBtn').addEventListener('click', async () => {
+        showLoadingSpinner();
+        const count = await autoMoveDateFolders();
+        hideLoadingSpinner();
+        alert(`Successfully moved ${count} bookmarks and cleaned up folders.`);
+        fetchAndProcessBookmarks();
+    });
+
+}
+
+// Function to populate the dropdown options from allFoldersList
+export function populateTodoDropdown() {
+    const $dropdown = $('#todoFolderDropdown');
+    const uniqueFolders = [...new Set(allFoldersList.map(f => f.title))].sort();
+
+    let html = '<option value="">Search and select folders to watch...</option>';
+    uniqueFolders.forEach(name => {
+        html += `<option value="${name}">${name}</option>`;
+    });
+
+    $dropdown.html(html);
+    $dropdown.dropdown('refresh');
+}
+
+function renderTodoTags() {
+    const container = document.getElementById('todoFolderTags');
+    container.innerHTML = todoFolders.map(f => `
+        <div class="tag" data-folder="${f}">
+            <span>${f}</span>
+            <button class="remove-todo-tag">&times;</button>
+        </div>
+    `).join('');
+}
+
+// Global helper for tag removal
+window.removeTodoFolder = (folderName) => {
+    const idx = todoFolders.indexOf(folderName);
+    if (idx > -1) {
+        todoFolders.splice(idx, 1);
+        renderTodoTags();
+        renderTodoList();
+    }
+};
+
 export function addExcludedFolderTag(folderName) {
     if (excludedFolders.includes(folderName)) return;
 
@@ -70,7 +153,6 @@ export function removeExcludedFolderTag(folderName) {
     });
 }
 
-// In uiHandlers.js, update the setupPaginationControls function:
 export function setupPaginationControls() {
     // Sync the dropdown with pagination state on initialization
     const itemsPerPageSelect = document.getElementById('itemsPerPageSelect');
@@ -80,14 +162,22 @@ export function setupPaginationControls() {
     document.getElementById('showAllBtn').addEventListener('click', () => {
         paginationState.enabled = false;
         paginationState.currentPage = 1;
-        displayBookmarks(allBookmarks);
+
+        showLoadingSpinner();
+        // Use setTimeout so the "Show" class actually renders before the CPU-heavy display logic runs
+        setTimeout(() => {
+            displayBookmarks(allBookmarks);
+            hideLoadingSpinner();
+        }, 10);
     });
 
     // Setup Enable Pagination button
     document.getElementById('enablePaginationBtn').addEventListener('click', () => {
         paginationState.enabled = true;
         paginationState.currentPage = 1;
+        showLoadingSpinner();
         displayBookmarks(allBookmarks);
+        hideLoadingSpinner();
     });
 
     // Setup navigation buttons
@@ -144,9 +234,11 @@ function filterExcludedFolders(bookmarks) {
 
 // Update the loading spinner functions
 export function showLoadingSpinner() {
-    document.getElementById('loadingOverlay').classList.remove('overlay-hidden');
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.classList.remove('overlay-hidden');
 }
 
 export function hideLoadingSpinner() {
-    document.getElementById('loadingOverlay').classList.add('overlay-hidden');
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.classList.add('overlay-hidden');
 }

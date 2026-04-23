@@ -1,14 +1,13 @@
 //main.js
 import { fetchAndProcessBookmarks } from './bookmarkUtils.js';
-import { setupEventListeners, setupPaginationControls, showLoadingSpinner, hideLoadingSpinner } from './uiHandlers.js';
+import { setupEventListeners, setupPaginationControls, showLoadingSpinner, hideLoadingSpinner, setupTodoListeners } from './uiHandlers.js';
 
-let currentSort = { column: null, ascending: true };
-// Add this line to make currentSort available globally
-window.currentSort = currentSort;
+import { sortState } from './bookmarkUtils.js';
+window.sortState = sortState;
 
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
+    setupTodoListeners();
     fetchAndProcessBookmarks();
     setupPaginationControls();
-    hideLoadingSpinner();
 });

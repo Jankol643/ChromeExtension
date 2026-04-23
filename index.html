@@ -5,15 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bookmarks Table</title>
+    <link rel="stylesheet" href="semantic.min.css">
     <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-    <!-- Loading Spinner Overlay -->
-    <div id="loadingOverlay" class="overlay overlay-hidden">
-        <div class="spinner"></div>
-        <div>Loading bookmarks...</div>
-    </div>
 
     <h1>Bookmarks Viewer</h1>
 
@@ -60,11 +56,55 @@
         <div id="excludedCount"></div>
     </div>
 
+    <div class="todo-section">
+        <h3>Move Tasks (TODO List)</h3>
+
+        <!-- Fomantic-UI Searchable Multi-Select -->
+        <div class="field">
+            <select id="todoFolderDropdown" multiple="" class="ui fluid search dropdown">
+                <option value="">Search and select folders to watch...</option>
+            </select>
+        </div>
+
+        <div class="todo-controls mt-3">
+            <button id="confirmMoveBtn" class="ui red button">Run Auto-Move (Date Folders)</button>
+        </div>
+
+        <div class="stats-container">
+            <div>Auto-Movable: <span id="autoMoveCount">0</span></div>
+            <div>In TODO Folders: <span id="todoCount">0</span></div>
+        </div>
+
+        <div class="table-container">
+            <div id="loadingOverlayTodo" class="overlay-hidden">
+                <div class="spinner"></div>
+            </div>
+            <datalist id="folderData"></datalist>
+            <table id="todoTable">
+                <thead>
+                    <tr>
+                        <th>Bookmark</th>
+                        <th>Current Path</th>
+                        <th>Target Folder</th>
+                        <!-- Other headers -->
+                    </tr>
+                </thead>
+                <tbody id="todoListBody"></tbody>
+            </table>
+        </div>
+
+    </div>
+
     <div class="table-container">
+        <div id="loadingOverlay" class="overlay overlay-hidden">
+            <div class="spinner"></div>
+            <div>Loading bookmarks...</div>
+        </div>
+
         <table id="bookmarksTable">
             <thead>
                 <tr>
-                    <th data-column="rowNumber" class="clickable-header">#</th>
+                    <th data-column="rowNumber" class="clickable-header">ID</th>
                     <th data-column="title" class="clickable-header">Title</th>
                     <th data-column="url" class="clickable-header">URL</th>
                     <th data-column="folder" class="clickable-header">Folder</th>
@@ -74,7 +114,8 @@
             <tbody></tbody>
         </table>
     </div>
-
+    <script src="jquery.min.js"></script>
+    <script src="semantic.min.js"></script>
     <script type="module" src="main.js"></script>
 </body>
 
